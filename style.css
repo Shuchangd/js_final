@@ -123,9 +123,25 @@ html, body, #map {
   background-color: #132f49;
 }
 
+#about:after {
+  content: '+';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 6px;
+}
+
 #county {
   top: 52px;
   background-color: #245079; /* Blue */
+}
+
+#county:after {
+  content: '+';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 6px;
 }
 
 #topic {
@@ -133,9 +149,25 @@ html, body, #map {
   background-color: #4c7ca8; /* Red */
 }
 
+#topic:after {
+  content: '+';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 6px;
+}
+
 #customize {
   top: 192px;
   background-color: #79a3c9 /* Light Black */
+}
+
+#customize:after {
+  content: '+';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 6px;
 }
 
 
