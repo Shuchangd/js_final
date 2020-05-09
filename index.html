@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Final-Shuchang</title>
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="lib/mark.js"></script>
+    <script src="lib/echarts.min.js"></script>
+    <script src="lib/underscore-min.js"></script>
+    <script src="lib/lodash.js"></script>
+    <script src="lib/echarts-wordcloud.min.js"></script>
+    <script src="lib/geojson-extent.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css" type="text/css"/>
+    <link rel="stylesheet" href="./lib/mapbox-gl.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="map" style='position:absolute; visibility: visible; left:260px;right:500px;background-color:rgb(250, 250, 250);'></div>
+
+    <div id="mySidenav" class="sidenav" style='position: absolute; top:-0.2%; left:300px; -moz-border-radius:1em; -webkit-border-radius:1em;'>
+        <a href="#" onclick = "loadSlide(slides[0],0)" id="about">About</a>
+        <a href="#" onclick = "loadSlide(slides[1],1)" id="county">Filter by County</a>
+        <a href="#" onclick = "loadSlide(slides[3],3)" id="topic">Filter by Topic</a>
+        <a href="#" onclick = "loadSlide(slides[4],4)" id="customize">Customize Boundary</a>
+    </div>
+
+    <div class='attributeControl' id='attributeControlWalk'
+        style='visibility:visible;position: absolute; left:0px; bottom:0px;width:280px;background-color: rgb(19, 41, 61);'>
+
+        <div style="position:absolute; left:50px; bottom:0.5%; color:white; letter-spacing:0.4px; ">  © JS Final - Shuchang Dong</div>
+
+        <!-- Side Control -->
+        <div class='attributeControl'
+            style='position: absolute; visibility:visible;top:3%; left:10px; width:260px;height:35%; background-color:white;  -moz-border-radius:1em; -webkit-border-radius:1em;'>
+            <h2 class='attributeControl-header' id = "mytitle" style = '-webkit-margin-after: 10px;'>
+                Resident Suggestions Explorer
+            </h2>
+            <span id = "description">What are the most concerned topics related to urban issues in city of Xiaman, China? I gathered data from Pinstreet, an application that geo-record user suggestions regarding to city issues. The map on the right shows the spacial distribution of all suggestions collected from the local residents. Try and customize the filter and see the result of topics of your interest.
+            </span>
+        </div>
+
+    <div class='attributeControl' id='myframe'
+        style='visibility:hidden; position: absolute; top:44%;height:49%;width:260px;left:10px; background-color:white;  -moz-border-radius:1em; -webkit-border-radius:1em; border-radius:1em;'>
+        <button class = "mybutton" id = "left"  onclick = "switchmodule('left')">Pie Chart</button>
+        <button class = "mybutton" id = "right" onclick = "switchmodule('right')">Word Cloud</button>
+        <h3 class='attributeControl-header' id = 'myfilter'>
+            Placeholder
+        </h3>
+
+        <div id = "streetfilter" >
+            <div style="position: absolute; top:3%; left: 75%">
+                <button onclick="dropdownshow()" class="dropbtn">Click Here</button>
+                <div id="myDropdown" class="dropdown-content">
+                    <a href="#" onclick = "street('Siming County')">Siming District</a>
+                    <a href="#" onclick = "street('Huli County')">Huli District</a>
+                    <a href="#" onclick = "street('Jimei County')">Jimei District</a>
+                    <a href="#" onclick = "street('Tongan County')">Tongan District</a>
+                    <a href="#" onclick = "street('Xiangan County')">Xiangan District</a>
+                    <a href="#" onclick = "street('Haicang County')">Haicang District</a>
+                </div>
+            </div>
+            <div id = "piechart" style='position: absolute; top: 12%; left: 5%; height:85%; width:100%;'>
+            </div>
+            <div id = "keyword" style='position: absolute; top: 9%; left: 0%; height:85%; width:100%;'>
+            </div>    
+            <h3 id = "annotate" class='attributeControl-header' style='position: absolute; top: 90%; left: 15%;'>
+                Topics in Selected District
+            </h3>          
+        </div>
+
+        <div id = "mytopic" class='attributeListBoday' style='position: absolute; margin-top:10px; margin-left: 10px;'>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/img/all_selected.png" onclick="doAll('all');">
+                </div>
+                <a>Select All</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style=" width:50%;" src="./images/img/all.png" id="all_icon" onclick="doAll('no');">
+                </div>
+                <a>Clear All</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/walkway-3.png" onclick="filter(this,'walkway');">
+                </div>
+                <a>Walkway</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/bike-3.png" onclick="filter(this,'bike');">
+                </div>
+                <a>Bike Routes</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/bus-3.png" onclick="filter(this,'bus');">
+                </div>
+                <a>Public Transit</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/park-3.png" onclick="filter(this,'park');">
+                </div>
+                <a>Green Space</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/pollution-3.png" onclick="filter(this,'pollution');">
+                </div>
+                <a>Pollution</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/landmark-3.png" onclick="filter(this,'landmark');">
+                </div>
+                <a>Landmarks</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/hospital-3.png" onclick="filter(this,'hospital');">
+                </div>
+                <a>Hospital</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/supermarket-3.png" onclick="filter(this,'supermarket');">
+                </div>
+                <a>Supermarket</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/housing-3.png" onclick="filter(this,'housing');">
+                </div>
+                <a>Housing & School</a>
+            </div>
+            <div class='attributeList'>
+                <div>
+                    <image style="width:50%;" src="./images/icon/recreation-3.png" onclick="filter(this,'recreation');">
+                </div>
+                <a>Recreation</a>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+
+
+<script src="./lib/mapbox-gl.js"></script>
+<script src="./data/xiamen_js.geojson"></script>
+<script src="./lib/all_functions.js"></script>
