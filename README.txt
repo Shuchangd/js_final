@@ -1,6 +1,6 @@
 Final Project by Shuchang Dong
 shucd@upenn.edu | @University of Pennsylvania
-Website: https://shuchangd.github.io/js_midterm/ 
+Website: https://shuchangd.github.io/js_final/ 
 
 
 Credits:
