@@ -11,3 +11,4 @@ Credits:
 	Other:
 		jQuery (jquery.com)
                 Echarts (echartsjs.com)
+		Button Style (w3schools.com)
